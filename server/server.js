@@ -34,9 +34,19 @@ io.sockets.on("connection", (socket) => {
         } else {
           socket.emit('response', Responses.GAME_EXISTS)
         }
+    });
 
-        socket.on(Requests.CREATE_GAME, (gameName) => {
+    socket.on(Requests.CREATE_GAME, (gameName) => {
+        const game = games.getGame(gameName);
+        if ( !game ) {
+            socket.emit('response', Responses.GAME_NOT_EXISTS);
+        } else {
+            if (game.addPlayer(socket)) {
+                socket.emit('response', Responses.SUCCESS);
+            } else{
+                socket.emit ('response', Responses.GAME_FULL);
+            }
+        }
+    });
 
-        });
-    })
 })
